@@ -2,3 +2,57 @@
 
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.animate-twinkle,.animate-drift,.animate-bob{animation:none}}
+
+/* ===== Polish layer (Nov 2026): buttons. Delete this block to get the plain originals back. ===== */
+.bg-primary.text-primary-foreground.hover-elevate,
+[data-testid="button-enter"],
+.hover-elevate.border.shadow-xs{
+  transition:transform .16s cubic-bezier(.23,1,.32,1),box-shadow .2s ease-out,background-color .2s ease-out,border-color .2s ease-out;
+}
+/* solid blue buttons: soft top-light, glow underneath */
+.bg-primary.text-primary-foreground.hover-elevate{
+  background-image:linear-gradient(180deg,hsl(200 100% 84%),hsl(205 100% 70%));
+  border-color:hsl(200 100% 88% / .9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 2px rgba(0,0,0,.35),0 6px 18px -6px rgba(100,180,255,.55);
+}
+/* outline buttons: frosted glass */
+.hover-elevate.border.shadow-xs{
+  background-color:rgba(143,194,255,.07);
+  border-color:rgba(190,220,255,.32);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+@media (hover:hover){
+  .bg-primary.text-primary-foreground.hover-elevate:hover{
+    transform:translateY(-1px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(0,0,0,.35),0 10px 26px -6px rgba(100,180,255,.8);
+  }
+  .hover-elevate.border.shadow-xs:hover{
+    transform:translateY(-1px);
+    background-color:rgba(143,194,255,.14);
+    border-color:rgba(190,220,255,.6);
+  }
+  [data-testid="button-enter"]:hover{
+    transform:translateY(-2px);
+    background:rgba(100,180,255,.34)!important;
+    border-color:rgba(190,220,255,.9)!important;
+    box-shadow:0 12px 36px rgba(0,0,0,.5),0 0 56px rgba(100,180,255,.75)!important;
+  }
+}
+.bg-primary.text-primary-foreground.hover-elevate:active,
+.hover-elevate.border.shadow-xs:active,
+[data-testid="button-enter"]:active{transform:scale(.97)}
+button:focus-visible,a:focus-visible{outline:2px solid hsl(200 100% 80%);outline-offset:3px}
+/* splash enter button: slow breathing glow so it reads as the thing to tap */
+[data-testid="button-enter"]{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+[data-testid="button-enter"]::before{
+  content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 44px 6px rgba(100,180,255,.55);opacity:.25;
+  animation:enter-glow 3.2s ease-in-out infinite alternate;
+}
+@keyframes enter-glow{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  [data-testid="button-enter"]::before{animation:none;opacity:.6}
+  .bg-primary.text-primary-foreground.hover-elevate,.hover-elevate.border.shadow-xs,[data-testid="button-enter"]{transition:none}
+}
+

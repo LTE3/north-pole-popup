@@ -65,49 +65,75 @@ function initCountdown() {
   timer = setInterval(render, 1000);
 }
 
-/* ---------- falling snow, two layers like the original ---------- */
+/* ---------- falling snow: soft flakes at three depths, slow shared wind ---------- */
 function initSnow() {
   if (reduceMotion) return;
-  const layers = $$("canvas[data-snow]").map((c, i) => ({
-    c, ctx: c.getContext("2d"), flakes: [],
-    big: i === 1, count: i === 1 ? 45 : 90,
-  }));
-  if (!layers.length) return;
-  let w, h;
+  const [back, front] = $$("canvas[data-snow]");
+  if (!back || !front) return;
+
+  // one soft-edged flake, drawn once and stamped for every flake
+  const sprite = document.createElement("canvas");
+  sprite.width = sprite.height = 64;
+  const sg = sprite.getContext("2d");
+  const grad = sg.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.25, "rgba(240,248,255,.85)");
+  grad.addColorStop(0.6, "rgba(200,225,255,.22)");
+  grad.addColorStop(1, "rgba(200,225,255,0)");
+  sg.fillStyle = grad;
+  sg.fillRect(0, 0, 64, 64);
+
+  // depth: far = many, tiny, slow. near = few, large, fast, out of focus.
+  const DEPTHS = [
+    { front: false, per: 9000,  max: 150, size: [2, 4.5], speed: [14, 30],  alpha: [0.35, 0.8], sway: 8 },
+    { front: false, per: 22000, max: 60,  size: [5, 9],   speed: [32, 58],  alpha: [0.5, 0.95], sway: 16 },
+    { front: true,  per: 70000, max: 16,  size: [14, 30], speed: [60, 105], alpha: [0.1, 0.28], sway: 26 },
+  ];
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const ctxs = [back, front].map((c) => c.getContext("2d"));
+  let w = 0, h = 0, flakes = [], raf = 0, last = 0, t = 0;
 
   function size() {
     const dpr = Math.min(devicePixelRatio || 1, 2);
+    const widthChanged = innerWidth !== w;
     w = innerWidth; h = innerHeight;
-    for (const L of layers) {
-      L.c.width = w * dpr; L.c.height = h * dpr;
-      L.c.style.width = w + "px"; L.c.style.height = h + "px";
-      L.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const n = Math.round(L.count * Math.min(1, w / 900 + 0.35));
-      L.flakes = Array.from({ length: n }, () => ({
-        x: Math.random() * w, y: Math.random() * h,
-        r: L.big ? Math.random() * 2 + 1.2 : Math.random() * 1.3 + 0.4,
-        v: L.big ? Math.random() * 0.9 + 0.6 : Math.random() * 0.5 + 0.2,
-        sway: Math.random() * Math.PI * 2, a: Math.random() * 0.5 + 0.4,
-      }));
-    }
+    [back, front].forEach((c, i) => {
+      c.width = w * dpr; c.height = h * dpr;
+      c.style.width = w + "px"; c.style.height = h + "px";
+      ctxs[i].setTransform(dpr, 0, 0, dpr, 0, 0);
+    });
+    if (!widthChanged) return;          // phone address bar sliding: keep the flakes
+    flakes = DEPTHS.flatMap((d) =>
+      Array.from({ length: Math.min(d.max, Math.round((w * h) / d.per)) }, () => ({
+        ctx: ctxs[d.front ? 1 : 0],
+        x: rnd(0, w), y: rnd(0, h),
+        s: rnd(...d.size), v: rnd(...d.speed), a: rnd(...d.alpha),
+        sway: d.sway * rnd(0.5, 1), phase: rnd(0, 6.28), rate: rnd(0.4, 1.1),
+      })));
   }
-  function frame() {
-    for (const L of layers) {
-      L.ctx.clearRect(0, 0, w, h);
-      L.ctx.fillStyle = "#fff";
-      for (const f of L.flakes) {
-        f.y += f.v; f.sway += 0.01; f.x += Math.sin(f.sway) * 0.35;
-        if (f.y > h + 5) { f.y = -5; f.x = Math.random() * w; }
-        L.ctx.globalAlpha = f.a;
-        L.ctx.beginPath(); L.ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); L.ctx.fill();
-      }
+
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now; t += dt;
+    const wind = Math.sin(t * 0.13) * 14 + Math.sin(t * 0.41) * 5;   // px/s, drifts left and right
+    ctxs.forEach((c) => c.clearRect(0, 0, w, h));
+    for (const f of flakes) {
+      f.y += f.v * dt;
+      f.x += (wind * (f.v / 60) + Math.cos(t * f.rate + f.phase) * f.sway) * dt;
+      if (f.y > h + f.s) { f.y = -f.s; f.x = rnd(0, w); }
+      if (f.x > w + f.s) f.x = -f.s; else if (f.x < -f.s) f.x = w + f.s;
+      f.ctx.globalAlpha = f.a * (0.82 + 0.18 * Math.sin(t * f.rate * 2 + f.phase));
+      f.ctx.drawImage(sprite, f.x - f.s / 2, f.y - f.s / 2, f.s, f.s);
     }
-    if (!document.hidden) requestAnimationFrame(frame);
+    raf = requestAnimationFrame(frame);
   }
+  const start = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+  const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
   size();
   addEventListener("resize", size);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) requestAnimationFrame(frame); });
-  requestAnimationFrame(frame);
+  document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+  start();
 }
 
 /* ---------- main page: banner, menu bar, buttons ---------- */
