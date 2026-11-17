@@ -10,7 +10,7 @@ GitHub Pages at https://lte3.github.io/north-pole-popup/
 - `main.js`: countdown, snow, menu, booking buttons
 
 ## Fill in before going live (top of `main.js`, `SITE` block)
-1. `openingDate` / `closingDate`: PLACEHOLDERS (Nov 27 2026 / Jan 17 2027).
+1. `openingDate` / `closingDate`: opening is Dec 1 2026 5pm (time assumed); closing Jan 17 2027 is a PLACEHOLDER.
    The countdown runs to opening, then flips to "Now Open", then "See You Next Winter".
 2. `packageCheckoutUrl`: paste a Stripe Payment Link. Empty = the Premium Package button emails you.
 3. `banner`: text for the blue strip under the menu bar (hidden while empty).

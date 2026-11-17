@@ -2,8 +2,8 @@
    Everything you need to edit each season lives in SITE below. */
 
 const SITE = {
-  // TODO PLACEHOLDER: real 2026 opening and closing times. Keep the -05:00 offset (Philadelphia, winter).
-  openingDate: "2026-11-27T17:00:00-05:00",
+  // Opening: Dec 1 2026, 5pm (time is a guess). Closing date is still a PLACEHOLDER. Keep the -05:00 offset (Philadelphia, winter).
+  openingDate: "2026-12-01T17:00:00-05:00",
   closingDate: "2027-01-17T22:00:00-05:00",
 
   // Blue strip under the menu bar. Leave empty to hide it.
