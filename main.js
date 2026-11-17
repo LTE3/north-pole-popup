@@ -70,6 +70,7 @@ function initSnow() {
   if (reduceMotion) return;
   const [back, front] = $$("canvas[data-snow]");
   if (!back || !front) return;
+  back.style.opacity = 1; front.style.opacity = 1;
 
   // one soft-edged flake, drawn once and stamped for every flake
   const sprite = document.createElement("canvas");
@@ -77,17 +78,17 @@ function initSnow() {
   const sg = sprite.getContext("2d");
   const grad = sg.createRadialGradient(32, 32, 0, 32, 32, 32);
   grad.addColorStop(0, "rgba(255,255,255,1)");
-  grad.addColorStop(0.25, "rgba(240,248,255,.85)");
-  grad.addColorStop(0.6, "rgba(200,225,255,.22)");
+  grad.addColorStop(0.38, "rgba(255,255,255,.95)");
+  grad.addColorStop(0.7, "rgba(215,235,255,.35)");
   grad.addColorStop(1, "rgba(200,225,255,0)");
   sg.fillStyle = grad;
   sg.fillRect(0, 0, 64, 64);
 
   // depth: far = many, tiny, slow. near = few, large, fast, out of focus.
   const DEPTHS = [
-    { front: false, per: 9000,  max: 150, size: [2, 4.5], speed: [14, 30],  alpha: [0.35, 0.8], sway: 8 },
-    { front: false, per: 22000, max: 60,  size: [5, 9],   speed: [32, 58],  alpha: [0.5, 0.95], sway: 16 },
-    { front: true,  per: 70000, max: 16,  size: [14, 30], speed: [60, 105], alpha: [0.1, 0.28], sway: 26 },
+    { front: false, per: 9000,  max: 150, size: [4, 7.5], speed: [14, 30],  alpha: [0.65, 1], sway: 8 },
+    { front: false, per: 22000, max: 60,  size: [9, 16],  speed: [32, 58],  alpha: [0.85, 1], sway: 16 },
+    { front: true,  per: 70000, max: 16,  size: [22, 44], speed: [60, 105], alpha: [0.25, 0.5], sway: 26 },
   ];
   const rnd = (a, b) => a + Math.random() * (b - a);
   const ctxs = [back, front].map((c) => c.getContext("2d"));
