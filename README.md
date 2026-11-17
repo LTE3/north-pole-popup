@@ -1,23 +1,30 @@
-# North Pole Pop-Up website (static rebuild, Nov 2026)
+# North Pole Pop-Up website
 
-Plain HTML/CSS/JS. No build step. Upload the whole folder to any static host
-(Netlify drop, Vercel, GitHub Pages, Cloudflare Pages, or Replit static).
+Same look as the original Replit site (splash page, then the main page), rebuilt
+as plain HTML/CSS/JS. No build step. Works on any static host; currently on
+GitHub Pages at https://lte3.github.io/north-pole-popup/
 
-## Fill in before going live (all in `main.js`, top `SITE` block)
+- `index.html`: splash page (flyer background, countdown, PHILADELPHIA button)
+- `home/index.html`: main page (about, reservations, hours, location)
+- `styles.css`: the original site's stylesheet
+- `main.js`: countdown, snow, menu, booking buttons
+
+## Fill in before going live (top of `main.js`, `SITE` block)
 1. `openingDate` / `closingDate`: PLACEHOLDERS (Nov 27 2026 / Jan 17 2027).
-   The status bar counts down, flips to "Open now", then "That's a wrap" by itself.
-2. `hours`: PLACEHOLDER, copied from the 2025 season.
-3. `packageCheckoutUrl`: paste a Stripe Payment Link. Empty = button emails you.
-4. Package price lives in `index.html` (`data-package-price`), still $19.99.
+   The countdown runs to opening, then flips to "Now Open", then "See You Next Winter".
+2. `packageCheckoutUrl`: paste a Stripe Payment Link. Empty = the Premium Package button emails you.
+3. `banner`: text for the blue strip under the menu bar (hidden while empty).
 
-## Also worth doing
-- `assets/og-image.png` still says "2025". Replace for link previews.
-- Most venue photos look AI-rendered (ice bar etc.). Swap in real photos from
-  the space when you have them: same filenames in `assets/img/`, WebP, ~1200px wide.
-- `assets/originals/` holds the full-size source images; not used by the page.
+Hours, the $19.99 package and all other wording are plain text in `home/index.html`
+(still the 2025 values).
+
+## Still 2025
+- The splash flyer (`assets/img/splash-bg.webp`) has "November 29th" printed in the artwork.
+- `assets/og-image.png` (link preview image) says 2025.
 
 ## What's wired
-- Table reservation button opens the Resy booking popup (venue 84382).
-- Groups of 10+ -> northpolepopupbar@gmail.com. Footer -> contact@northpolepopup.com.
-- `/home` redirects to `/` (old link kept working).
-- Not rebuilt: old /checkout (Stripe+Resy form), /admin, /cupid pages, "View Menu".
+- "Book Now" opens the Resy booking popup (venue 84382).
+- "Email to Inquire" and footer "Contact" go to northpolepopupbar@gmail.com.
+- "View Menu" scrolls to What to Expect (there is no menu page).
+- Not rebuilt: old /checkout, /admin and /cupid pages.
+- `assets/originals/` holds full-size source images; kept out of git.
